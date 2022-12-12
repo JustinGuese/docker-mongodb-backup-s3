@@ -6,5 +6,9 @@ RUN unzip awscliv2.zip
 RUN ./aws/install
 COPY ./script.sh /
 WORKDIR /
+# cleanup
+RUN rm -rf /tmp/*
+RUN apt remove -y curl unzip
+RUN apt autoremove -y
 RUN chmod +x script.sh
 CMD ["/script.sh"]

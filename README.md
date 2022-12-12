@@ -1,5 +1,7 @@
 # docker-mongodb-backup-s3
 
+https://hub.docker.com/repository/docker/guestros/mongodb-backup-s3
+
 simple mongodb backup image to be run as cronjob / job
 
 dumps the contents of a mongodb database with [mongodump](https://www.mongodb.com/docs/database-tools/mongodump/) to a file containing the current date (e.g. mongodbbackup-2022-12-12.gz), and uploads it to an s3 bucket. 
