@@ -1,0 +1,21 @@
+version: "3"
+services:
+  mongotest:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+
+  mongodb-backup:
+    image: guestros/mongodb-backup-s3:latest
+    build: .
+    environment:
+      - MONGO_URI=mongodb://mongo:27017
+      # s3 related settings
+      # - AWS_ACCESS_KEY_ID=
+      # - AWS_SECRET_ACCESS_KEY=
+      # - S3_BUCKET=example
+      # - S3_PATH=mongo
+      # - S3_ENDPOINT=s3.amazonaws.com
+    env_file:
+      - cloudcreds
