@@ -1,24 +1,29 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: mongodb-backup
+  name: mongodb-myopia-backup
 spec:
+  concurrencyPolicy: Forbid
   schedule: "1 2 * * *" # help: https://crontab.guru/#30_15-21_*_*_*
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-          - name: hello
+          - name: mongodb-myopia-backup
             image: guestros/mongodb-backup-s3:latest
-            imagePullPolicy: IfNotPresent
+            imagePullPolicy: Always
             env:
             - name: MONGO_URI
-              value: "mongodb://mongo.default.cluster.svc.local:27017"
+              value: "mongodb://mongodb-service.proddb.svc.cluster.local:27017"
             - name: S3_BUCKET
-              value: "mongodb-backup-bucket"
+              value: "backup-myopia-prod"
+            - name: S3_PATH
+              value: "prod/"
             - name: S3_ENDPOINT
               value: "https://s3.amazonaws.com"
+            - name: S3_REGION
+              value: "eu-central-1"
             # secrets
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
