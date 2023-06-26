@@ -5,6 +5,16 @@ I migrated everything to PSQL, and you should do the same.
 
 Previous commits show a version using mongodump and mongorestore, but as you might have guessed it, they don't work and corrupt your database.
 
+## restore
+
+1. download the .tar.gz file
+2. tar -xvf 2023-06-26_backup.tar.gz
+3. navigate in the subfolder to the DB you want to restore
+4. you should see a .bson and a .metadata.json file in this folder
+5. mongorestore patients.bson -h URL:PORT -db DBNAME
+    - optionally -U = user, 
+
+
 # docker-mongodb-backup-s3
 
 https://hub.docker.com/repository/docker/guestros/mongodb-backup-s3

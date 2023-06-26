@@ -2,9 +2,19 @@ import datetime
 import gzip
 import json
 import os
+import subprocess
 
 import boto3
 from pymongo import MongoClient
+
+
+# Custom JSON encoder class to handle datetime objects
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        return super().default(obj)
+
 
 # MongoDB connection settings
 mongo_uri = os.environ['MONGO_URI']
@@ -40,17 +50,23 @@ for database in databases:
     database_dir = os.path.join(backup_dir, database)
     os.makedirs(database_dir)
     
-    for collection in client[database].list_collection_names():
-        print("Dumping collection: ", collection, " in database: ", database)
-        allDocs = client[database][collection].find()
-        allDocs = list(allDocs)
-        for i in range(len(allDocs)):
-            # fix for ObjectId not serializable
-            allDocs[i]["_id"] = str(allDocs[i]["_id"])
-        # Dump the database to a JSON file
-        dump_file = os.path.join(database_dir, f"{database}.json")
-        with open(dump_file, 'w') as f:
-            json.dump(allDocs, f, default=str)
+    # Dump the database to a JSON file
+    dump_file = os.path.join(database_dir, f"{database}.json")
+    cmd = f"mongodump --authenticationDatabase=admin --uri='{mongo_uri}/?ssl=false&authSource=admin' --db '{database}' --out '{database_dir}'"
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    process.wait()
+    if process.returncode != 0:
+        raise Exception(f"Error dumping database {database}. {process.stderr} {process.stout}")
+    
+
+    # # Gzip the JSON file
+    # gzipped_file = f"{dump_file}.gz"
+    # with open(dump_file, 'rb') as f_in:
+    #     with gzip.open(gzipped_file, 'wb') as f_out:
+    #         f_out.writelines(f_in)
+
+    # # Remove the uncompressed JSON file
+    # os.remove(dump_file)
 
 
 # Create a unique archive name
@@ -72,7 +88,7 @@ s3_client = boto3.client(
 s3_client.upload_file(archive_name, s3_bucket, os.path.join(s3_path, archive_name))
 
 # Remove the backup directory and archive
-os.remove(archive_name)
+# os.remove(archive_name)
 os.system(f"rm -r {backup_dir}")
 
 # Print success message
