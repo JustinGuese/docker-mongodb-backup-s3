@@ -1,3 +1,10 @@
+# remarks
+
+my first tip: do not use mongodb. in my past 2-3 years using it administration was horrible. it's easy to set up, but then you will run in countless errors including limitations to CPUs, special RAM bugs etc where they basically just tell you to go and buy their managed expensive service. 
+I migrated everything to PSQL, and you should do the same. 
+
+Previous commits show a version using mongodump and mongorestore, but as you might have guessed it, they don't work and corrupt your database.
+
 # docker-mongodb-backup-s3
 
 https://hub.docker.com/repository/docker/guestros/mongodb-backup-s3

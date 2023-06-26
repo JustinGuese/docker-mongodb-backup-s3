@@ -17,5 +17,5 @@ services:
       # - S3_BUCKET=example
       # - S3_PATH=mongo
       # - S3_ENDPOINT=s3.amazonaws.com
-    env_file:
-      - cloudcreds
+    # env_file:
+    #   - cloudcreds
